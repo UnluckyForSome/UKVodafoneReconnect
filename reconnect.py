@@ -1,13 +1,16 @@
-from selenium import webdriver
+import os
 import time
-
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def routerconfig(query, passwd):
-    browser = webdriver.Chrome('C:/Users/joemc/Documents/Current/Python/McReconnect/chromedriver_win32/chromedriver.exe')
+def get_script_directory():
+    # Get the directory where the script is located
+    return os.path.dirname(os.path.abspath(__file__))
 
+def routerconfig(query, passwd):
+    browser = webdriver.Chrome()
     browser.get(query)
 
     WebDriverWait(browser, 30).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="login-txt-pwd"]')))
@@ -48,12 +51,15 @@ print("@author Joseph McClemont")
 print("@license http://www.gnu.org/licenses/gpl.html")
 
 # Password Handler
-try:  # try to open file configRouter.txt
-    with open("Y:/GitHub/PythonScripts/McReconnect/configRouter.txt", "r") as f:
+try:
+    # Construct the path to configRouter.txt relative to the script directory
+    config_file_path = os.path.join(get_script_directory(), "configRouter.txt")
+
+    with open(config_file_path, "r") as f:
         data = f.readlines()
 
     #  format list of config vars
-    configRouter = [line.rstrip('\n') for line in open('C:/Users/joemc/Documents/Current/Python/McReconnect/configRouter.txt')]
+    configRouter = [line.rstrip('\n') for line in open(config_file_path)]
     configRouter = [w.replace('password=', '') for w in configRouter]
 
     try:  # check if file is empty
@@ -63,8 +69,11 @@ try:  # try to open file configRouter.txt
 
     f.close()
 
-except IOError:  # if file configRouter.txt not exist, create new
-    file = open("Y:/GitHub/PythonScripts/McReconnect/configRouter.txt", 'w', newline='\n')
+except IOError:
+    # Construct the path to configRouter.txt relative to the script directory
+    config_file_path = os.path.join(get_script_directory(), "configRouter.txt")
+
+    file = open(config_file_path, 'w', newline='\n')
     print("\nRouter connector config\n")
 
     #  user input for new password
